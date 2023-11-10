@@ -1,13 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from pytube import YouTube
+from dotenv import load_dotenv
 from moviepy.editor import AudioFileClip
 import whisper
 import openai
+import os
 
 app = FastAPI()
 
-# Replace 'your-openai-api-key' with your actual OpenAI API key
-openai.api_key = "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"
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 @app.post("/process-video/")
 async def process_video(youtube_url: str):
