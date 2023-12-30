@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from routes.routes import router as youtube_router
+from dotenv import load_dotenv
 
+load_dotenv()  # This will load environment variables from a .env file
 app = FastAPI()
 
 # Include the YouTube processing router
