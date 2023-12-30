@@ -2,6 +2,7 @@ from pytube import YouTube
 from moviepy.editor import AudioFileClip
 import os
 import json
+import tempfile 
 
 class YouTubeService:
     def __init__(self):
@@ -12,29 +13,30 @@ class YouTubeService:
         os.makedirs(self.video_dir, exist_ok=True)
         os.makedirs(self.metadata_dir, exist_ok=True)
 
-    def download_video(self, url):
+    def download_audio_for_transcription(self, url):
         """
-        Downloads the video and saves it in the designated directory.
+        Downloads the video, extracts audio, and saves it temporarily for transcription.
         """
         yt = YouTube(url)
-        video = yt.streams.filter(progressive=True, file_extension='mp4').first()
+        video = yt.streams.filter(only_audio=True).first()
         if video:
-            video_file_path = os.path.join(self.video_dir, f"{yt.video_id}.mp4")
-            video.download(output_path=self.video_dir, filename=f"{yt.video_id}.mp4")
-            return video_file_path
+            with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_video_file:
+                video_file_path = tmp_video_file.name
+                video.download(filename=video_file_path)
+
+            # Extract audio
+            audio_clip = AudioFileClip(video_file_path)
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_audio_file:
+                audio_file_path = tmp_audio_file.name
+                audio_clip.write_audiofile(audio_file_path)
+
+            # Remove the temporary video file
+            os.remove(video_file_path)
+
+            return audio_file_path
         else:
-            raise Exception("No suitable video stream found")
-
-    def extract_audio(self, video_file_path):
-        """
-        Extracts audio from the downloaded video and saves it as a .wav file.
-        """
-        audio_clip = AudioFileClip(video_file_path)
-        audio_file_path = os.path.join(self.audio_dir, os.path.basename(video_file_path).replace('.mp4', '.wav'))
-        audio_clip.write_audiofile(audio_file_path)
-        audio_clip.close()
-        return audio_file_path
-
+            raise Exception("No suitable audio stream found")
+        
     def get_video_metadata(self, url):
         """
         Fetches metadata for a given YouTube video URL.
