@@ -44,3 +44,23 @@ header, main {
     padding: 20px;
     border-top: 1px solid #ddd;
 }
+
+.output {
+    width: 48%;
+    display: inline-block;
+    vertical-align: top;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    margin: 10px;
+    height: 300px; /* Or any other height */
+    overflow-y: auto; /* For scrollable content */
+}
+
+/* Optional: Add some styling for a split view */
+@media screen and (max-width: 800px) {
+    .output {
+        display: block;
+        width: auto;
+    }
+}

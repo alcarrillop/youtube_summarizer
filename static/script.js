@@ -18,11 +18,14 @@ document.getElementById('youtube-form').onsubmit = async function(event) {
         }
 
         const data = await response.json();
-        resultDiv.innerHTML = `
-            <p><strong>Metadata:</strong> ${JSON.stringify(data.metadata)}</p>
-            <p><strong>Transcription:</strong> ${data.transcription}</p>
-            <p><strong>Summary:</strong> ${data.summary}</p>
-        `;
+        document.getElementById('transcription-output').textContent = data.transcription;
+        document.getElementById('summary-output').textContent = data.summary;
+
+        // resultDiv.innerHTML = `
+        //     <p><strong>Metadata:</strong> ${JSON.stringify(data.metadata)}</p>
+        //     <p><strong>Transcription:</strong> ${data.transcription}</p>
+        //     <p><strong>Summary:</strong> ${data.summary}</p>
+        // `;
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
         resultDiv.textContent = 'Error: Could not process video.';
