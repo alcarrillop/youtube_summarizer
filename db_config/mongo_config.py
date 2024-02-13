@@ -9,5 +9,5 @@ def get_database():
     client = MongoClient(CONNECTION_STRING)
 
     # Create the database if it doesn't exist
-    return client['youtube_llm']
+    return client['youtube']
 

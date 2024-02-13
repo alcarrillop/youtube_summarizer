@@ -11,7 +11,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 load_dotenv()  # This will load environment variables from a .env file
 
 # Include the YouTube processing router
-app.include_router(youtube_router, prefix="/youtube", tags=["youtube"])
+app.include_router(youtube_router, tags=["youtube"])
 
 # Additional configurations or routes can be added here
 

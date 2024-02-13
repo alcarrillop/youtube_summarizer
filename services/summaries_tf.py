@@ -2,11 +2,9 @@ import os
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, GenerationConfig
 
 class SummaryService:
-    def __init__(self, storage_dir="data/relational/summaries", model_name='google/flan-t5-base'):
-        self.storage_dir = storage_dir
+    def __init__(self, model_name='google/flan-t5-base'):
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-        os.makedirs(storage_dir, exist_ok=True)
 
     def chunk_text(self, text, max_chunk_size=1000):
         """
@@ -50,12 +48,3 @@ class SummaryService:
             all_summaries += summary + " "
 
         return all_summaries.strip()
-
-    def save_summary(self, summary, summary_file_name):
-        """
-        Saves the summary text to a file.
-        """
-        summary_file_path = os.path.join(self.storage_dir, summary_file_name + ".txt")
-        with open(summary_file_path, 'w') as file:
-            file.write(summary)
-        return summary_file_path

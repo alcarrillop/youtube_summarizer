@@ -1,8 +1,12 @@
-document.getElementById('youtube-form').onsubmit = async function(event) {
+document.getElementById('youtube-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const youtubeUrl = document.getElementById('youtube-url').value;
-    const resultDiv = document.getElementById('result');
+    
+    // Clear previous results
+    document.getElementById('metadata-output').textContent = '';
+    document.getElementById('transcription-output').textContent = '';
+    document.getElementById('summary-output').textContent = '';
 
     try {
         const response = await fetch('/process-youtube-video/', {
@@ -16,18 +20,13 @@ document.getElementById('youtube-form').onsubmit = async function(event) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
+
+        // Populate the metadata, transcription, and summary sections
+        document.getElementById('metadata-output').textContent = JSON.stringify(data.metadata, null, 2);
         document.getElementById('transcription-output').textContent = data.transcription;
         document.getElementById('summary-output').textContent = data.summary;
-
-        // resultDiv.innerHTML = `
-        //     <p><strong>Metadata:</strong> ${JSON.stringify(data.metadata)}</p>
-        //     <p><strong>Transcription:</strong> ${data.transcription}</p>
-        //     <p><strong>Summary:</strong> ${data.summary}</p>
-        // `;
     } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-        resultDiv.textContent = 'Error: Could not process video.';
+        console.error('Error fetching video data:', error);
     }
-};
+});

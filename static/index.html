@@ -3,29 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Bot</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>YouTube Summarizer</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>YouTube Bot</h1>
+        <header class="header-with-logo">
+            <img src="youtube-logo.png" alt="YouTube Logo" class="youtube-logo">
+            <h1>YouTube Summarizer</h1>
         </header>
         <main>
             <form id="youtube-form">
                 <input type="text" id="youtube-url" placeholder="Enter YouTube video URL" required>
                 <button type="submit">Process Video</button>
             </form>
-            <div id="result">
-                <div id="transcription-output" class="output">
-                    <!-- Transcription will be displayed here -->
-                </div>
-                <div id="summary-output" class="output">
-                    <!-- Summary will be displayed here -->
-                </div>
+            
+            <!-- Metadata Display -->
+            <div id="metadata-output" class="metadata"></div>
+            
+            <!-- Transcription and Summary Section -->
+            <div class="results-container">
+                <div id="transcription-output" class="half-section"></div>
+                <div id="summary-output" class="half-section"></div>
             </div>
+        
         </main>
     </div>
     <script src="script.js"></script>
+
 </body>
 </html>

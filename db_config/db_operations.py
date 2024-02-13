@@ -1,9 +1,9 @@
-from mongo_config import get_database
+from db_config.mongo_config import get_database
 from pymongo.errors import DuplicateKeyError
 
 def save_transcription(video_id, transcription, summary, metadata):
     db = get_database()
-    collection = db.transcriptions
+    collection = db.summaries
 
     try:
         collection.insert_one({
@@ -18,5 +18,5 @@ def save_transcription(video_id, transcription, summary, metadata):
 
 def check_if_video_exists(video_id):
     db = get_database()
-    collection = db.transcriptions
+    collection = db.summaries
     return collection.find_one({"_id": video_id}) is not None
