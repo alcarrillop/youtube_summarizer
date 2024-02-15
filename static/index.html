@@ -8,28 +8,28 @@
 </head>
 <body>
     <div class="container">
-        <header class="header-with-logo">
+        <header class="header">
+
             <img src="youtube-logo.png" alt="YouTube Logo" class="youtube-logo">
             <h1>YouTube Summarizer</h1>
         </header>
         <main>
-            <form id="youtube-form">
+            <form id="youtube-form" class="youtube-form">
                 <input type="text" id="youtube-url" placeholder="Enter YouTube video URL" required>
                 <button type="submit">Process Video</button>
             </form>
             
-            <!-- Metadata Display -->
             <div id="metadata-output" class="metadata"></div>
-            
-            <!-- Transcription and Summary Section -->
+
             <div class="results-container">
+
                 <div id="transcription-output" class="half-section"></div>
                 <div id="summary-output" class="half-section"></div>
             </div>
-        
+
         </main>
     </div>
     <script src="script.js"></script>
-
+    </body>
 </body>
 </html>
