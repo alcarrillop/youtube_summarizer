@@ -9,7 +9,6 @@
 <body>
     <div class="container">
         <header class="header">
-
             <img src="youtube-logo.png" alt="YouTube Logo" class="youtube-logo">
             <h1>YouTube Summarizer</h1>
         </header>
@@ -19,17 +18,30 @@
                 <button type="submit">Process Video</button>
             </form>
             
-            <div id="metadata-output" class="metadata"></div>
-
-            <div class="results-container">
-
-                <div id="transcription-output" class="half-section"></div>
-                <div id="summary-output" class="half-section"></div>
+            <!-- Actualizado para incluir secciones específicas para título, autor y fecha de publicación -->
+            <div id="metadata-output" class="metadata">
+                <h2>Info</h2>
+                <p><strong>Title:</strong> <span id="meta-title">N/A</span></p>
+                <p><strong>Author:</strong> <span id="meta-author">N/A</span></p>
+                <p><strong>Publish Date:</strong> <span id="meta-publish-date">N/A</span></p>
             </div>
 
+            <div class="results-container">
+                <div id="transcription-output" class="half-section">
+                    <h2>Transcription</h2>
+                    <div id="transcription-text"><!-- La transcripción se mostrará aquí --></div>
+
+                    <!-- La transcripción se mostrará aquí -->
+                </div>
+                <div id="summary-output" class="half-section">
+                    <h2>Summary</h2>
+                    <div id="summary-text"><!-- La transcripción se mostrará aquí --></div>
+
+                    <!-- El resumen se mostrará aquí -->
+                </div>
+            </div>
         </main>
     </div>
     <script src="script.js"></script>
-    </body>
 </body>
 </html>

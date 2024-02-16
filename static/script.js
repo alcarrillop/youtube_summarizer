@@ -1,84 +1,79 @@
-document.getElementById('youtube-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('youtube-form');
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevenir el comportamiento de envío predeterminado del formulario.
+        const youtubeUrl = document.getElementById('youtube-url').value; // Obtener la URL ingresada por el usuario.
 
-    const youtubeUrl = document.getElementById('youtube-url').value;
+        try {
+            const metadataResponse = await fetchMetadata(youtubeUrl); // Llamar a la función para obtener la metadata.
+            if (metadataResponse && metadataResponse.metadata) {
+                updateMetadataDisplay(metadataResponse.metadata); // Actualizar el frontend con la metadata.
+                
+                // Proceder con la transcripción y el resumen.
+                const videoId = metadataResponse.metadata.video_id;
+                const transcriptionResponse = await fetchTranscription(videoId, youtubeUrl);
+                updateTranscriptionDisplay(transcriptionResponse.transcription); // Actualizar el frontend con la transcripción.
 
-    // Clear previous results
-    clearPreviousResults();
-
-    try {
-        // Fetch and process metadata
-        const metadataResponse = await fetchMetadata(youtubeUrl);
-        if (metadataResponse && metadataResponse.message === "Metadata processed successfully") {
-            updateMetadataDisplay(metadataResponse.metadata);
-            const videoId = metadataResponse.metadata.video_id;
-
-            // Fetch and process transcription
-            const transcriptionResponse = await fetchTranscription(videoId);
-            if (transcriptionResponse && transcriptionResponse.message === "Transcription processed successfully") {
-                updateTranscriptionDisplay(transcriptionResponse.transcription);
-
-                // Fetch and process summary
-                const summaryResponse = await fetchSummary(videoId);
-                if (summaryResponse && summaryResponse.message === "Summary processed successfully") {
-                    updateSummaryDisplay(summaryResponse.summary);
-                }
+                const summaryResponse = await fetchSummary(videoId, youtubeUrl);
+                updateSummaryDisplay(summaryResponse.summary); // Actualizar el frontend con el resumen.
+            } else {
+                console.error('Metadata is missing in the response');
             }
+        } catch (error) {
+            console.error('Error processing video data:', error); // Manejar cualquier error que ocurra en la solicitud.
         }
-    } catch (error) {
-        console.error('Error processing video data:', error);
-        displayErrorMessage('Failed to process video data. Please try again.');
-    }
+    });
 });
 
 async function fetchMetadata(youtubeUrl) {
+    // Realizar la solicitud POST al backend para obtener la metadata.
     const response = await fetch('/metadata/', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `youtube_url=${encodeURIComponent(youtubeUrl)}`
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `youtube_url=${encodeURIComponent(youtubeUrl)}` // Asegurarse de codificar la URL.
     });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`); // Lanzar un error si la respuesta no es exitosa.
+    }
+    return await response.json(); // Devolver la respuesta como JSON.
+}
+
+async function fetchTranscription(videoId, youtubeUrl) {
+    const response = await fetch('/transcription/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `video_id=${encodeURIComponent(videoId)}&youtube_url=${encodeURIComponent(youtubeUrl)}`
+    });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
 }
 
-async function fetchTranscription(videoId) {
-    const response = await fetch('/transcription/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `video_id=${encodeURIComponent(videoId)}`
-    });
-    return await response.json();
-}
 
 async function fetchSummary(videoId) {
     const response = await fetch('/summary/', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `video_id=${encodeURIComponent(videoId)}`
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `video_id=${videoId}`
     });
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
 }
 
-
 function updateMetadataDisplay(metadata) {
-    document.getElementById('metadata-output').textContent = `Title: ${metadata.title}\nAuthor: ${metadata.author}\nPublish Date: ${metadata.publish_date}`;
+    // Actualizar el DOM con los valores de la metadata.
+    document.getElementById('meta-title').textContent = metadata.title || 'Title not available';
+    document.getElementById('meta-author').textContent = metadata.author || 'Author not available';
+    document.getElementById('meta-publish-date').textContent = metadata.publish_date || 'Publish date not available';
 }
 
 function updateTranscriptionDisplay(transcription) {
-    document.getElementById('transcription-output').textContent = transcription;
+    document.getElementById('transcription-text').textContent = transcription || 'Transcription not available';
 }
 
 function updateSummaryDisplay(summary) {
-    document.getElementById('summary-output').textContent = summary;
-}
-
-function clearPreviousResults() {
-    document.getElementById('metadata-output').textContent = '';
-    document.getElementById('transcription-output').textContent = '';
-    document.getElementById('summary-output').textContent = '';
-}
-
-
-function displayErrorMessage(message) {
-    // Implement a way to display error messages to the user
-    console.error(message); // Placeholder for actual UI error handling
+    document.getElementById('summary-text').textContent = summary || 'Summary not available';
 }

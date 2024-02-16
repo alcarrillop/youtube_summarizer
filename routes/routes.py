@@ -30,30 +30,21 @@ async def process_metadata(youtube_url: str = Form(...)):
         raise HTTPException(status_code=500, detail="Failed to save metadata.")
 
 @router.post("/transcription/")
-async def process_transcription(video_id: str = Form(...)):
+async def process_transcription(video_id: str = Form(...), youtube_url: str = Form(...)):
+    # Verificar si la transcripción ya existe en la base de datos
     existing_transcription = get_existing_data(video_id, "transcription")
     if existing_transcription:
         return {"message": "Transcription already exists.", "transcription": existing_transcription}
-
-    # Assuming there's a mechanism in place to fetch the youtube_url based on video_id
-    # This requires you to have the youtube_url saved with the metadata initially
-    youtube_url = get_existing_data(video_id, "metadata").get('youtube_url')
-    if not youtube_url:
-        raise HTTPException(status_code=400, detail="YouTube URL is required for processing transcription.")
-
-    try:
-        
-        audio_file_path = youtube_service.download_audio_for_transcription(youtube_url)
-    except Exception as e:
-        raise  HTTPException(status_code=503, detail=f"Error downloading audio file: {str(e)}")
-        
-    try:
-        transcription = transcription_service.generate_transcription(audio_file_path)
-        os.remove(audio_file_path)  # Clean up temporary file
-    except Exception as e:
-        raise  HTTPException(status_code=503, detail=f"Failed to save transcription. Error: {str(e)}")
-        
     
+    # Procesar la transcripción utilizando la URL de YouTube proporcionada
+    try:
+        audio_file_path = youtube_service.download_audio_for_transcription(youtube_url)
+        transcription = transcription_service.generate_transcription(audio_file_path)
+        os.remove(audio_file_path)  # Eliminar el archivo de audio temporal después de la transcripción
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Failed to process transcription. Error: {str(e)}")
+    
+    # Guardar la transcripción en la base de datos y devolver una respuesta
     if save_data(video_id, transcription, "transcription"):
         return {"message": "Transcription processed successfully", "transcription": transcription}
     else:
