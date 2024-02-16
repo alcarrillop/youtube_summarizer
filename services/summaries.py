@@ -2,7 +2,6 @@ from transformers import pipeline
 
 class SummaryService:
     def __init__(self):
-        # Initialize the summarization pipeline with your chosen model
         self.summarizer = pipeline("summarization", model="Falconsai/text_summarization")
 
     def chunk_text(self, text, max_chunk_size=1000):
@@ -16,7 +15,7 @@ class SummaryService:
         for sentence in sentences:
             sentence = sentence.strip() + '.'
             if not sentence.strip():
-                continue  # Skip empty sentences
+                continue
             if len(current_chunk) + len(sentence) <= max_chunk_size:
                 current_chunk += " " + sentence if current_chunk else sentence
             else:
@@ -39,6 +38,5 @@ class SummaryService:
             summary = self.summarizer(chunk, max_length=max_length, min_length=min_length, do_sample=False)
             chunk_summaries.append(summary[0]['summary_text'])
 
-        # Combine the summaries of all chunks into a single summary
         final_summary = ' '.join(chunk_summaries)
         return final_summary

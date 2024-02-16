@@ -39,28 +39,37 @@ async function fetchMetadata(youtubeUrl) {
 }
 
 async function fetchTranscription(videoId, youtubeUrl) {
-    const response = await fetch('/transcription/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `video_id=${encodeURIComponent(videoId)}&youtube_url=${encodeURIComponent(youtubeUrl)}`
-    });
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    toggleLoadingIndicator(true, 'transcription-text'); // Mostrar el indicador de carga
+    try {
+        const response = await fetch('/transcription/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `video_id=${encodeURIComponent(videoId)}&youtube_url=${encodeURIComponent(youtubeUrl)}`
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } finally {
+        toggleLoadingIndicator(false, 'transcription-text'); // Ocultar el indicador de carga
     }
-    return await response.json();
 }
 
-
 async function fetchSummary(videoId) {
-    const response = await fetch('/summary/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `video_id=${videoId}`
-    });
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    toggleLoadingIndicator(true, 'summary-text'); // Mostrar el indicador de carga
+    try {
+        const response = await fetch('/summary/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `video_id=${videoId}`
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } finally {
+        toggleLoadingIndicator(false, 'summary-text'); // Ocultar el indicador de carga
     }
-    return await response.json();
 }
 
 function updateMetadataDisplay(metadata) {
@@ -76,4 +85,15 @@ function updateTranscriptionDisplay(transcription) {
 
 function updateSummaryDisplay(summary) {
     document.getElementById('summary-text').textContent = summary || 'Summary not available';
+}
+
+function toggleLoadingIndicator(show, containerId) {
+    const container = document.getElementById(containerId);
+    if (show) {
+        // Insertar el HTML del indicador de carga directamente
+        container.innerHTML = '<div class="loading-indicator"></div>';
+    } else {
+        // Limpiar el contenedor para futuros datos
+        container.innerHTML = '';
+    }
 }

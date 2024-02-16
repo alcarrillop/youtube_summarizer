@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Form
-from services.youtube_2 import YouTubeService
-from services.transcriptions_2 import TranscriptionService
-from services.summaries_tf_2 import SummaryService
+from services.youtube import YouTubeService
+from services.transcriptions import TranscriptionService
+from services.summaries import SummaryService
 from db_config.db_operations import get_existing_data, save_data
 import os
 
